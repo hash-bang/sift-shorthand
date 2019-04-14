@@ -28,12 +28,18 @@ var shorthand = function(...args) {
 				.split(settings.stringSplit)
 				.forEach(arg => {
 					var assigner = settings.stringAssignments.find(v => {
-						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\s*(?<assigner>' + v.id + ')\s*(?<b>.+)$'); // Compile searcher if we don't have one already
+						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\s*(?<assigner>' + shorthand.escapeRegExp(v.id) + ')\s*(?<b>.+)$'); // Compile searcher if we don't have one already
 						return v.compiled.test(arg);
 					});
 					if (assigner) {
 						var bits = assigner.compiled.exec(arg);
-						settings.merge(q, assigner.exec(bits.groups.a, bits.groups.b, bits.groups.assigner));
+						settings.merge(q,
+							assigner.exec(bits.groups.a,
+								settings.stringAssignmentGuessType
+									? shorthand.guessType(bits.groups.b)
+									: bits.groups.b, bits.groups.assigner
+							)
+						);
 					} else {
 						if (settings.throw) throw new Error(`Unknown string expression "${arg}"`);
 					}
@@ -54,13 +60,7 @@ var shorthand = function(...args) {
 shorthand.mergeDotted = (subject, ...merges) => {
 	merges.forEach(merge =>
 		_.forEach(merge, (v, k) =>
-			_.set(subject, k,
-				! _.isString(v) ? v // Already typecast into JS primative
-				: isFinite(v) ? parseFloat(v)
-				: v == 'true' ? true
-				: v == 'false' ? false
-				: v,
-			)
+			_.set(subject, k, shorthand.guessType(v))
 		)
 	);
 
@@ -68,15 +68,53 @@ shorthand.mergeDotted = (subject, ...merges) => {
 };
 
 
+/**
+* Attempt to correctly guess the value type from context
+* @param {string} input The value to guess the type of
+* @returns {*} The input value with a guessed type
+*/
+shorthand.guessType = input =>
+	!_.isString(input) ? input // Already typecast into JS primative
+	: isFinite(input) ? parseFloat(input)
+	: input == 'true' ? true
+	: input == 'false' ? false
+	: input;
+
+
+
+/**
+* Utility function to escape a string to be RegExp safe
+* @param {string} input The input string to escape
+* @returns {string} The escaped input string
+*/
+shorthand.escapeRegExp = input => input.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+
+
 shorthand.defaults = {
 	throw: true,
 	merge: shorthand.mergeDotted, // Use shorthand.mergeDotted to honor dotted notation or _.merge for a simple merge
 	hanson: true,
 	isJSON: v => /^{.*}$/.test(v),
+	stringAssignmentGuessType: true,
 	stringAssignments: [
-		{id: '=', exec: (a, b) => ({[a]: b})},
-		{id: '==', exec: (a, b) => ({[a]: b})},
+		// Arguments are evaluated in order so longer arguments with negation need to go first (i.e. `!=` should come before '=')
 		{id: '!=', exec: (a, b) => ({[a]: {$ne: b}})},
+		{id: '===null', compiled: /(?<a>.+)===null/, exec: a => ({[a]: null})},
+		{id: '===undefined', compiled: /(?<a>.+)===undefined/, exec: a => ({[a]: undefined})},
+		{id: '==', exec: (a, b) => ({[a]: b})},
+		{id: '~=', exec: (a, b) => ({[a]: {$regex: b}})},
+		{id: '>=', exec: (a, b) => ({[a]: {$gte: parseFloat(b)}})},
+		{id: '<=', exec: (a, b) => ({[a]: {$lte: parseFloat(b)}})},
+		{id: '~=', exec: (a, b) => ({[a]: {$regex: b}})},
+		{id: '/=', exec: (a, b) => ({[a]: {$regex: b}})},
+		{id: '^=', exec: (a, b) => ({[a]: {$regex: '^' + b}})},
+		{id: '$=', exec: (a, b) => ({[a]: {$regex: b + '$'}})},
+		{id: '>', exec: (a, b) => ({[a]: {$gt: parseFloat(b)}})},
+		{id: '<', exec: (a, b) => ({[a]: {$lt: parseFloat(b)}})},
+		{id: '![]=', exec: (a, b) => ({[a]: {$nin: b}})},
+		{id: '[]=', exec: (a, b) => ({[a]: {$in: b}})},
+		{id: '=', exec: (a, b) => ({[a]: b})},
+		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false})},
 		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true})},
 	],
 	stringSplit: /\s*,\s*/,
