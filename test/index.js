@@ -22,4 +22,10 @@ describe('sift-shorthand', ()=> {
 		expect(ss('{"foo.bar.baz":"nested"}', '{"foo.quz":123}')).to.deep.equal({foo: {bar: {baz: 'nested'}, quz: 123}});
 	});
 
+	it('should support string syntax', ()=> {
+		expect(ss('foo=Foo!')).to.deep.equal({foo: 'Foo!'});
+		expect(ss('foo=Foo!,bar=123')).to.deep.equal({foo: 'Foo!', bar: 123});
+		expect(ss('foo')).to.deep.equal({foo: true});
+	});
+
 });

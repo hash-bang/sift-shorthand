@@ -16,19 +16,10 @@ var shorthand = function(...args) {
 		if (_.isArray(arg)) {
 			throw new Error('Dont know how to handle array input');
 		} else if (_.isObject(arg)) {
-			if (settings.dotObjects) {
-				_.forEach(arg, (v, k) => _.set(q, k, v));
-			} else {
-				settings.merge(q, arg);
-			}
-		} else if (_.isString(arg) && settings.hanson) {
+			settings.merge(q, arg);
+		} else if (_.isString(arg) && settings.isJSON(arg)) {
 			try {
-				var decoded = settings.hanson ? hanson.parse(arg) : JSON.parse(arg);
-				if (settings.dotObjects) {
-					_.forEach(decoded, (v, k) => _.set(q, k, v));
-				} else {
-					settings.merge(q, decoded);
-				}
+				settings.merge(q, settings.hanson ? hanson.parse(arg) : JSON.parse(arg));
 			} catch (e) {
 				if (settings.throw) throw e;
 			}
@@ -36,11 +27,16 @@ var shorthand = function(...args) {
 			arg
 				.split(settings.stringSplit)
 				.forEach(arg => {
-					var assigner = _.findIndex(_.keys(settings.stringAssignments), (v, k) => {
-						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)(?<assigner>' + k + ')(?<b>.+)$'); // Compile searcher if we don't have one already
-						var bits = v.compiled.exec(arg);
-						console.log('EXTRACTED', bits);
+					var assigner = settings.stringAssignments.find(v => {
+						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\s*(?<assigner>' + v.id + ')\s*(?<b>.+)$'); // Compile searcher if we don't have one already
+						return v.compiled.test(arg);
 					});
+					if (assigner) {
+						var bits = assigner.compiled.exec(arg);
+						settings.merge(q, assigner.exec(bits.groups.a, bits.groups.b, bits.groups.assigner));
+					} else {
+						if (settings.throw) throw new Error(`Unknown string expression "${arg}"`);
+					}
 				})
 		}
 	});
@@ -48,18 +44,45 @@ var shorthand = function(...args) {
 	return q;
 };
 
+
+/**
+* Like _.merge() but also processes dotted key values
+* @param {Object} subject The subject to merge into
+* @param {Object} merges... Additional objects (which may contain dotted keys) to merge into subject
+* @returns {Object} The input subject
+*/
+shorthand.mergeDotted = (subject, ...merges) => {
+	merges.forEach(merge =>
+		_.forEach(merge, (v, k) =>
+			_.set(subject, k,
+				! _.isString(v) ? v // Already typecast into JS primative
+				: isFinite(v) ? parseFloat(v)
+				: v == 'true' ? true
+				: v == 'false' ? false
+				: v,
+			)
+		)
+	);
+
+	return subject;
+};
+
+
 shorthand.defaults = {
 	throw: true,
-	merge: _.merge,
+	merge: shorthand.mergeDotted, // Use shorthand.mergeDotted to honor dotted notation or _.merge for a simple merge
 	hanson: true,
 	isJSON: v => /^{.*}$/.test(v),
-	stringAssignments: {
-		'=': {exec: (a, b) => ({[a]: b})},
-		'==': {exec: (a, b) => ({[a]: b})},
-		'!=': {exec: (a, b) => ({[a]: {$ne: b}})},
-	},
-	stringSplit: /\s*(,|\&\&|\|\|)\s*/,
-	dotObjects: true, // Scan object assignments and reparse paths as dotted notation
+	stringAssignments: [
+		{id: '=', exec: (a, b) => ({[a]: b})},
+		{id: '==', exec: (a, b) => ({[a]: b})},
+		{id: '!=', exec: (a, b) => ({[a]: {$ne: b}})},
+		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true})},
+	],
+	stringSplit: /\s*,\s*/,
+	assignType: v =>
+		_.isFinite(v) ? new Number(v)
+		: v,
 };
 
 module.exports = shorthand;
