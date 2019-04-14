@@ -79,3 +79,17 @@ Object containing the default values used in the main `siftShorthand()` function
 | `stringAssignmentGuessType` | `boolean`        | `true`                  | Try to guess and correct the incoming input type for string assignments |
 | `stringAssignments`         | `array <Object>` | See code                | Rules used to assign string assignment tuples                           |
 | `stringSplit`               | `RegExp`         | See code                | How to split a string of tuples                                         |
+
+
+
+siftShorthand.mergeDotted(subject, args...)
+-------------------------------------------
+Merge additional objects deeply into the `subject`.
+This function is similar to Lodash's `_.merge()` function except that dotted notation is supoprted.
+
+
+siftShorthand.guessType(input)
+------------------------------
+Attempt to identify and allocated the value type based on context.
+This function tries to determine if a string value is finite (in which case it assumes a `Number` type) etc.
+
