@@ -118,9 +118,6 @@ shorthand.defaults = {
 		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true})},
 	],
 	stringSplit: /\s*,\s*/,
-	assignType: v =>
-		_.isFinite(v) ? new Number(v)
-		: v,
 };
 
 module.exports = shorthand;
