@@ -23,6 +23,8 @@ siftShorthand(
 ) //= {a: 1, b: 2, c: 3, d: 4, e: {f: 5}, g: 7}
 ```
 
+See the [testkits](./test) for more advanced examples.
+
 
 Supported Syntax Types
 ----------------------
