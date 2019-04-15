@@ -28,7 +28,7 @@ var shorthand = function(...args) {
 				.split(settings.stringSplit)
 				.forEach(arg => {
 					var assigner = settings.stringAssignments.find(v => {
-						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\s*(?<assigner>' + shorthand.escapeRegExp(v.id) + ')\s*(?<b>.+)$'); // Compile searcher if we don't have one already
+						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\\s*(?<assigner>' + shorthand.escapeRegExp(v.id) + ')\\s*(?<b>.+)$'); // Compile searcher if we don't have one already
 						return v.compiled.test(arg);
 					});
 					if (assigner) {

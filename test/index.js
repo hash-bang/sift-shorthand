@@ -31,6 +31,7 @@ describe('Query syntax', ()=> {
 		expect(ss('foo=Foo!,bar=123')).to.deep.equal({foo: 'Foo!', bar: 123});
 		expect(ss('foo!=Foo!')).to.deep.equal({foo: {$ne: 'Foo!'}});
 		expect(ss('foo!=123')).to.deep.equal({foo: {$ne: 123}});
+		expect(ss('status=active')).to.deep.equal({status: 'active'});
 	})
 
 	it('should support boolean queries', ()=> {
