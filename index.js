@@ -8,9 +8,13 @@ var hanson = require('hanson');
 var shorthand = function(...args) {
 	var q = {};
 
-	var settings = {
-		...shorthand.defaults,
-	};
+	// Adopt settings {{{
+	var settings = {...shorthand.defaults};
+	if (args.length > 1 && _.isObject(args[args.length - 1])) { // Assume last argument is options
+		_.merge(settings, args[args.length - 1]);
+		args.pop();
+	}
+	// }}}
 
 	_.flatten(args).forEach(arg => {
 		if (_.isArray(arg)) {
@@ -27,6 +31,7 @@ var shorthand = function(...args) {
 			arg
 				.split(settings.stringSplit)
 				.forEach(arg => {
+					if (!arg) return;
 					var assigner = settings.stringAssignments.find(v => {
 						if (!v.compiled) v.compiled = new RegExp('^(?<a>.+?)\\s*(?<assigner>' + shorthand.escapeRegExp(v.id) + ')\\s*(?<b>.+)$'); // Compile searcher if we don't have one already
 						return v.compiled.test(arg);
@@ -48,6 +53,23 @@ var shorthand = function(...args) {
 	});
 
 	return q;
+};
+
+
+shorthand.values = function(...args) {
+	var q = {};
+
+	// Adopt settings {{{
+	var settings = {...shorthand.defaults};
+	if (args.length > 1 && _.isObject(args[args.length - 1])) { // Assume last argument is options
+		_.merge(settings, args[args.length - 1]);
+		args.pop();
+	}
+	// }}}
+
+	return shorthand(...args, {
+		stringAssignments: settings.stringAssignments.filter(a => a.values),
+	});
 };
 
 
@@ -113,9 +135,9 @@ shorthand.defaults = {
 		{id: '<', exec: (a, b) => ({[a]: {$lt: parseFloat(b)}})},
 		{id: '![]=', exec: (a, b) => ({[a]: {$nin: b}})},
 		{id: '[]=', exec: (a, b) => ({[a]: {$in: b}})},
-		{id: '=', exec: (a, b) => ({[a]: b})},
-		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false})},
-		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true})},
+		{id: '=', exec: (a, b) => ({[a]: b}), values: true},
+		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false}), values: true},
+		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true}), values: true},
 	],
 	stringSplit: /\s*,\s*/,
 };

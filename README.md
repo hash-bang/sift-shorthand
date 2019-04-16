@@ -61,7 +61,7 @@ The main API supports simple string, CSV, arrays and a variety of other input ty
 API
 ===
 
-siftShorthand(args...)
+siftShorthand(args..., settings)
 --------------------------------
 Parse one or more strings, arrays, objects etc. into a single Sift compatible output query.
 
@@ -82,6 +82,17 @@ Object containing the default values used in the main `siftShorthand()` function
 | `stringAssignments`         | `array <Object>` | See code                | Rules used to assign string assignment tuples                           |
 | `stringSplit`               | `RegExp`         | See code                | How to split a string of tuples                                         |
 
+
+siftShorthand.values(args..., settings)
+---------------------------------------
+A minimal version of siftShorthand that only processes direct-set values such as `foo=1`, `bar` (which is `true`), `!baz` (which is false).
+
+```javascript
+siftShorthand('foo=1') //= {foo: 1}
+siftShorthand('foo=1,bar=2') //= {foo: 1, bar:2}
+siftShorthand('foo') //= {foo: true}
+siftShorthand('!foo') //= {foo: false}
+```
 
 
 siftShorthand.mergeDotted(subject, args...)
