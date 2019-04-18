@@ -49,10 +49,8 @@ The main API supports simple string, CSV, arrays and a variety of other input ty
 | `key[]=val`         | Array     | `foo[]=bar`         | `{foo: {$in: 'bar'}}`       | Checks whether the given value exists within an array           |
 | `key![]=val`        |           | `foo[]=bar`         | `{foo: {$nin: 'bar'}}`      | Checks whether the given value does not exist within an array   |
 | `key#=val`          |           | `foo#=3`            | `{foo: {$size: 1}}`         | Checks that an array is an exact length                         |
-| `key#>val`          |           | `foo>4`             | `{foo: {$size: {$gt: 4}}}`  | Checks that an array is larger than a given length              |
-| `key#>=val`         |           | `foo>5`             | `{foo: {$size: {$gte: 5}}}` | Checks that an array is larger or equal to a given length       |
-| `key#<val`          |           | `foo<6`             | `{foo: {$size: {$lt: 6}}}`  | Checks that an array is smaller than a given length             |
-| `key#<=val`         |           | `foo<7`             | `{foo: {$size: {$lte: 7}}}` | Checks that an array is smaller or equal to a given length      |
+| `key#>val`          |           | `foo>4`             | See notes                   | Checks that an array is larger than a given length              |
+| `key#>=val`         |           | `foo>=5`            | See notes                   | Checks that an array is larger or equal to a given length       |
 | `key===null`        | Types     | `foo===null`        | `{foo: null}`               | Checks against the `null` type                                  |
 | `key===undefined`   |           | `foo===undefined`   | `{foo: undefined}`          | Checks against the `undefined` type                             |
 
@@ -61,6 +59,8 @@ The main API supports simple string, CSV, arrays and a variety of other input ty
 
 * All fields work with dotted notation and will be expanded in the output. For example `foo.bar.baz=123` becomes `{foo: {bar: {baz: 123}}}`
 * [HanSON](https://github.com/timjansen/hanson) is used by default to decode entries that *look* like JSON
+* Mongo / Sift do not have native methods of measuring the size of arrays so the horrible `{field.number: {$exists: true}` method is used instead
+* Checking for array size-less than is not possible using the above, so `field#<size` or `field#<=` are not available
 
 
 API
