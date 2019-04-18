@@ -1,6 +1,6 @@
 {
   "name": "sift-shorthand",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Shorthand query strings for Sift",
   "main": "index.js",
   "scripts": {

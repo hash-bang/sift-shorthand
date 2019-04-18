@@ -56,6 +56,11 @@ describe('Query syntax', ()=> {
 	it('should support array quries', ()=> {
 		expect(ss('foo[]=123')).to.deep.equal({foo: {$in: 123}});
 		expect(ss('foo![]=123')).to.deep.equal({foo: {$nin: 123}});
+		expect(ss('foo#=3')).to.deep.equal({foo: {$size: 3}});
+		expect(ss('foo#>4')).to.deep.equal({foo: {$size: {$gt: 4}}});
+		expect(ss('foo#>=5')).to.deep.equal({foo: {$size: {$gte: 5}}});
+		expect(ss('foo#<6')).to.deep.equal({foo: {$size: {$lt: 6}}});
+		expect(ss('foo#<=7')).to.deep.equal({foo: {$size: {$lte: 7}}});
 	});
 
 	it('should support type queries', ()=> {

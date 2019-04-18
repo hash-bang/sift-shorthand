@@ -31,25 +31,30 @@ Supported Syntax Types
 The main API supports simple string, CSV, arrays and a variety of other input types. The below is a quick-reference table for the compatible inputs.
 
 
-| Name              | Type    | Example input     | Sift Equivalent           | Description                                                   |
-|-------------------|---------|-------------------|---------------------------|---------------------------------------------------------------|
-| `key=val`         | String  | `foo=bar`         | `{foo: "bar"}`            | Simple key/value assignment                                   |
-| `key==val`        |         | `foo==bar`        | `{foo: "bar"}`            | Simple key/value assignment, alternative syntax               |
-| `key!=vak`        |         | `foo!=bar`        | `{foo: ${ne: "bar"}}`     | Negation syntax                                               |
-| `key`             | Boolean | `foo`             | `{foo: true}`             | Simple boolean flag                                           |
-| `!key`            |         | `!foo`            | `{foo: false}`            | Simple negation boolean flag                                  |
-| `key<number`      | Number  | `foo<123`         | `{foo: {$lt: 123}}`       | Number is-less-than                                           |
-| `key<=number`     |         | `foo<=123`        | `{foo: {$lte: 123}}`      | Number is-less-or-equal-to                                    |
-| `key>number`      |         | `foo>123`         | `{foo: {$gt: 123}}`       | Number is-greater-than                                        |
-| `key>=number`     |         | `foo>=123`        | `{foo: {$gte: 123}}`      | Number is-greater-or-equal-to                                 |
-| `key~=RE`         | RegEx   | `foo!=o`          | `{foo: {$regex: 'o'}}`    | Simple search-anywhere Regular Expression syntax              |
-| `key/=RE`         |         | `foo/=o`          | `{foo: {$regex: 'o'}}`    | Simple search-anywhere Regular Expression syntax, alt syntax  |
-| `key^=val`        |         | `foo^=bar`        | `{foo: {$regex: '^bar'}}` | String begins-with                                            |
-| `key$=val`        |         | `foo$=val`        | `{foo: {$regex: 'bar$'}}` | String ends-with                                              |
-| `key[]=val`       | Array   | `foo[]=bar`       | `{foo: {$in: 'bar'}}`     | Checks whether the given value exists within an array         |
-| `key![]=val`      |         | `foo[]=bar`       | `{foo: {$nin: 'bar'}}`    | Checks whether the given value does not exist within an array |
-| `key===null`      | Types   | `foo===null`      | `{foo: null}`             | Checks against the `null` type                                |
-| `key===undefined` |         | `foo===undefined` | `{foo: undefined}`        | Checks against the `undefined` type                           |
+| Name                | Type      | Example input       | Sift Equivalent             | Description                                                     |
+|---------------------|-----------|---------------------|-----------------------------|-----------------------------------------------------------------|
+| `key=val`           | String    | `foo=bar`           | `{foo: "bar"}`              | Simple key/value assignment                                     |
+| `key==val`          |           | `foo==bar`          | `{foo: "bar"}`              | Simple key/value assignment, alternative syntax                 |
+| `key!=vak`          |           | `foo!=bar`          | `{foo: ${ne: "bar"}}`       | Negation syntax                                                 |
+| `key`               | Boolean   | `foo`               | `{foo: true}`               | Simple boolean flag                                             |
+| `!key`              |           | `!foo`              | `{foo: false}`              | Simple negation boolean flag                                    |
+| `key<number`        | Number    | `foo<123`           | `{foo: {$lt: 123}}`         | Number is-less-than                                             |
+| `key<=number`       |           | `foo<=123`          | `{foo: {$lte: 123}}`        | Number is-less-or-equal-to                                      |
+| `key>number`        |           | `foo>123`           | `{foo: {$gt: 123}}`         | Number is-greater-than                                          |
+| `key>=number`       |           | `foo>=123`          | `{foo: {$gte: 123}}`        | Number is-greater-or-equal-to                                   |
+| `key~=RE`           | RegEx     | `foo!=o`            | `{foo: {$regex: 'o'}}`      | Simple search-anywhere Regular Expression syntax                |
+| `key/=RE`           |           | `foo/=o`            | `{foo: {$regex: 'o'}}`      | Simple search-anywhere Regular Expression syntax, alt syntax    |
+| `key^=val`          |           | `foo^=bar`          | `{foo: {$regex: '^bar'}}`   | String begins-with                                              |
+| `key$=val`          |           | `foo$=val`          | `{foo: {$regex: 'bar$'}}`   | String ends-with                                                |
+| `key[]=val`         | Array     | `foo[]=bar`         | `{foo: {$in: 'bar'}}`       | Checks whether the given value exists within an array           |
+| `key![]=val`        |           | `foo[]=bar`         | `{foo: {$nin: 'bar'}}`      | Checks whether the given value does not exist within an array   |
+| `key#=val`          |           | `foo#=3`            | `{foo: {$size: 1}}`         | Checks that an array is an exact length                         |
+| `key#>val`          |           | `foo>4`             | `{foo: {$size: {$gt: 4}}}`  | Checks that an array is larger than a given length              |
+| `key#>=val`         |           | `foo>5`             | `{foo: {$size: {$gte: 5}}}` | Checks that an array is larger or equal to a given length       |
+| `key#<val`          |           | `foo<6`             | `{foo: {$size: {$lt: 6}}}`  | Checks that an array is smaller than a given length             |
+| `key#<=val`         |           | `foo<7`             | `{foo: {$size: {$lte: 7}}}` | Checks that an array is smaller or equal to a given length      |
+| `key===null`        | Types     | `foo===null`        | `{foo: null}`               | Checks against the `null` type                                  |
+| `key===undefined`   |           | `foo===undefined`   | `{foo: undefined}`          | Checks against the `undefined` type                             |
 
 
 **Notes**:
