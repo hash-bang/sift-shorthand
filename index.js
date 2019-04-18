@@ -38,7 +38,7 @@ var shorthand = function(...args) {
 					});
 					if (assigner) {
 						var bits = assigner.compiled.exec(arg);
-						settings.merge(q,
+						(assigner.merge || settings.merge)(q,
 							assigner.exec(bits.groups.a,
 								settings.stringAssignmentGuessType
 									? shorthand.guessType(bits.groups.b)
@@ -120,6 +120,15 @@ shorthand.defaults = {
 	stringAssignmentGuessType: true,
 	stringAssignments: [
 		// Arguments are evaluated in order so longer arguments with negation need to go first (i.e. `!=` should come before '=')
+		/* Item details:
+		{
+			id: String, // The shorthand ID, will be transformed into the compiled RegExp if `compiled` is omitted
+			compiled: RegExp, // The compiled RegExp to search for. Should expose `a` and optional `b` capture groups to use in `exec`
+			exec: Function(a, [b]), // Function to run and return the transformed value
+			merge: Function, // Optional function to use when merging the result into the main query, if omitted the settings.merge option is used
+			values: Boolean, // Whether this assignment should be used in shorthand.values()
+		},
+		*/
 		{id: '!=', exec: (a, b) => ({[a]: {$ne: b}})},
 		{id: '===null', compiled: /(?<a>.+)===null/, exec: a => ({[a]: null})},
 		{id: '===undefined', compiled: /(?<a>.+)===undefined/, exec: a => ({[a]: undefined})},
@@ -132,8 +141,8 @@ shorthand.defaults = {
 		{id: '![]=', exec: (a, b) => ({[a]: {$nin: b}})},
 		{id: '[]=', exec: (a, b) => ({[a]: {$in: b}})},
 		{id: '#=', exec: (a, b) => ({[a]: {$size: b}})},
-		{id: '#>=', exec: (a, b) => ({[`${a}.${b}`]: {$exists: true}})},
-		{id: '#>', exec: (a, b) => ({[`${a}.${b+1}`]: {$exists: true}})},
+		{id: '#>=', exec: (a, b) => ({[`${a}.${b}`]: {$exists: true}}), merge: _.merge},
+		{id: '#>', exec: (a, b) => ({[`${a}.${b+1}`]: {$exists: true}}), merge: _.merge},
 		{id: '>=', exec: (a, b) => ({[a]: {$gte: parseFloat(b)}})},
 		{id: '<=', exec: (a, b) => ({[a]: {$lte: parseFloat(b)}})},
 		{id: '>', exec: (a, b) => ({[a]: {$gt: parseFloat(b)}})},
