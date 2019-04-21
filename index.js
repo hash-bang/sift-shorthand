@@ -112,7 +112,25 @@ shorthand.guessType = input =>
 * @param {string} input The input string to escape
 * @returns {string} The escaped input string
 */
-shorthand.escapeRegExp = input => input.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+shorthand.escapeRegExp = input => input.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+
+
+/**
+* Function to take raw string input and return an array of values
+* @param {string} input The input string to parse
+* @param {Object} [options] Additional options for parsing
+* @param {boolean} [options.hanson] When parsing JSON, use the HanSON parser
+* @param {string} [options.seperator=","] The CSV seperator to use
+* @returns {array} The input string split into an array
+*/
+shorthand.parseArray = (input, options) => {
+	var settings = {
+		seperator: ',',
+		...options,
+	};
+
+	return csv.parse('' + input, settings.seperator)[0].map(i => _.trim(i).replace(/^(.*)='(.*)'$/, '$1=$2')).map(shorthand.guessType)
+};
 
 
 shorthand.defaults = {
@@ -154,8 +172,8 @@ shorthand.defaults = {
 		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false}), values: true},
 		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true}), values: true},
 	],
-	arraySplit: input => csv.parse('' + input, '|')[0].map(i => _.trim(i).replace(/^(.*)='(.*)'$/, '$1=$2')).map(shorthand.guessType),
-	stringSplit: input => csv.parse('' + input, ',')[0].map(i => _.trim(i).replace(/^(.*)='(.*)'$/, '$1=$2')).map(shorthand.guessType),
+	arraySplit: input => shorthand.parseArray(input, {seperator: '|'}),
+	stringSplit: input => shorthand.parseArray(input, {seperator: ','}),
 };
 
 module.exports = shorthand;
