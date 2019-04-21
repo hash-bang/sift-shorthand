@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var csv = require('csv-string');
 var hanson = require('hanson');
 
 /**
@@ -28,8 +29,7 @@ var shorthand = function(...args) {
 				if (settings.throw) throw e;
 			}
 		} else if (_.isString(arg)) {
-			arg
-				.split(settings.stringSplit)
+			settings.stringSplit(arg)
 				.forEach(arg => {
 					if (!arg) return;
 					var assigner = settings.stringAssignments.find(v => {
@@ -39,10 +39,13 @@ var shorthand = function(...args) {
 					if (assigner) {
 						var bits = assigner.compiled.exec(arg);
 						(assigner.merge || settings.merge)(q,
-							assigner.exec(bits.groups.a,
+							assigner.exec(
+								bits.groups.a,
 								settings.stringAssignmentGuessType
 									? shorthand.guessType(bits.groups.b)
-									: bits.groups.b, bits.groups.assigner
+									: bits.groups.b,
+								bits.groups.assigner,
+								settings
 							)
 						);
 					} else {
@@ -138,8 +141,8 @@ shorthand.defaults = {
 		{id: '/=', exec: (a, b) => ({[a]: {$regex: b}})},
 		{id: '^=', exec: (a, b) => ({[a]: {$regex: '^' + b}})},
 		{id: '$=', exec: (a, b) => ({[a]: {$regex: b + '$'}})},
-		{id: '![]=', exec: (a, b) => ({[a]: {$nin: b}})},
-		{id: '[]=', exec: (a, b) => ({[a]: {$in: b}})},
+		{id: '![]=', exec: (a, b, assigner, settings) => ({[a]: {$nin: settings.arraySplit(b)}})},
+		{id: '[]=', exec: (a, b, assigner, settings) => ({[a]: {$in: settings.arraySplit(b)}})},
 		{id: '#=', exec: (a, b) => ({[a]: {$size: b}})},
 		{id: '#>=', exec: (a, b) => ({[`${a}.${b}`]: {$exists: true}}), merge: _.merge},
 		{id: '#>', exec: (a, b) => ({[`${a}.${b+1}`]: {$exists: true}}), merge: _.merge},
@@ -151,7 +154,8 @@ shorthand.defaults = {
 		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false}), values: true},
 		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true}), values: true},
 	],
-	stringSplit: /\s*,\s*/,
+	arraySplit: input => csv.parse('' + input, '|')[0].map(i => _.trim(i).replace(/^(.*)='(.*)'$/, '$1=$2')).map(shorthand.guessType),
+	stringSplit: input => csv.parse('' + input, ',')[0].map(i => _.trim(i).replace(/^(.*)='(.*)'$/, '$1=$2')).map(shorthand.guessType),
 };
 
 module.exports = shorthand;

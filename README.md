@@ -61,6 +61,7 @@ The main API supports simple string, CSV, arrays and a variety of other input ty
 * [HanSON](https://github.com/timjansen/hanson) is used by default to decode entries that *look* like JSON
 * Mongo / Sift do not have native methods of measuring the size of arrays so the horrible `{field.number: {$exists: true}` method is used instead
 * Checking for array size-less than is not possible using the above, so `field#<size` or `field#<=` are not available
+* For array functions (`[]=` / `![]=`) separate multiple values with pipes (i.e. `|`, spaces are optional). Pipes are used to distinguish from the CSV input style of `key=value` blocks
 
 
 API
@@ -86,6 +87,7 @@ Object containing the default values used in the main `siftShorthand()` function
 | `stringAssignmentGuessType` | `boolean`        | `true`                  | Try to guess and correct the incoming input type for string assignments |
 | `stringAssignments`         | `array <Object>` | See code                | Rules used to assign string assignment tuples                           |
 | `stringSplit`               | `RegExp`         | See code                | How to split a string of tuples                                         |
+| `arraySplit`                | `function`       | See code                | How to split array-like values (`[]=` and `![]=`)                       |
 
 
 siftShorthand.values(args..., settings)

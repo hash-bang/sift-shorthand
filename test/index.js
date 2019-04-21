@@ -53,9 +53,11 @@ describe('Query syntax', ()=> {
 		expect(ss('foo$=bar')).to.deep.equal({foo: {$regex: 'bar$'}});
 	});
 
-	it('should support array quries', ()=> {
-		expect(ss('foo[]=123')).to.deep.equal({foo: {$in: 123}});
-		expect(ss('foo![]=123')).to.deep.equal({foo: {$nin: 123}});
+	it('should support array queries', ()=> {
+		expect(ss('foo[]=123')).to.deep.equal({foo: {$in: [123]}});
+		expect(ss('foo[]=1|2|3|4|5|6')).to.deep.equal({foo: {$in: [1, 2, 3, 4, 5, 6]}});
+		expect(ss('foo![]=123')).to.deep.equal({foo: {$nin: [123]}});
+		expect(ss('foo![]=1|2|3|4|5|6')).to.deep.equal({foo: {$nin: [1, 2, 3, 4, 5, 6]}});
 		expect(ss('foo#=3')).to.deep.equal({foo: {$size: 3}});
 		expect(ss('foo#>4')).to.deep.equal({'foo.5': {$exists: true}});
 		expect(ss('foo#>=5')).to.deep.equal({'foo.5': {$exists: true}});
@@ -64,6 +66,12 @@ describe('Query syntax', ()=> {
 	it('should support type queries', ()=> {
 		expect(ss('foo===null')).to.deep.equal({foo: null});
 		expect(ss('foo===undefined')).to.deep.equal({foo: undefined});
+	});
+
+	it('should support combined values', ()=> {
+		expect(ss('foo=Foo!,bar= bar , baz=Hello World,quz=\'Hello \'World\',flarp=123')).to.deep.equal({foo: 'Foo!', bar: 'bar', baz: 'Hello World', quz: 'Hello \'World', flarp: 123});
+		expect(ss('foo[]=1|2|3 or three|four maybe five')).to.deep.equal({foo: {$in: [1, 2, '3 or three', 'four maybe five']}});
+
 	});
 
 });
