@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var expect = require('chai').expect;
 var ss = require('..');
 
@@ -15,6 +16,11 @@ describe('siftShorthand.values()', ()=> {
 		expect(ss.values('{"foo.bar.baz":"nested"}', '{"foo.quz":123}')).to.deep.equal({foo: {bar: {baz: 'nested'}, quz: 123}});
 		expect(ss.values('foo')).to.deep.equal({foo: true});
 		expect(ss.values('!foo')).to.deep.equal({foo: false});
+	});
+
+	it('should support settings', ()=> {
+		expect(ss.values('foo.bar.baz', {merge: _.merge})).to.deep.equal({'foo.bar.baz': true});
+		expect(ss.values('!foo.bar.baz', {merge: _.merge})).to.deep.equal({'foo.bar.baz': false});
 	});
 
 });

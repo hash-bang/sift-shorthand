@@ -72,6 +72,7 @@ shorthand.values = function(...args) {
 
 	return shorthand(...args, {
 		stringAssignments: settings.stringAssignments.filter(a => a.values),
+		...settings,
 	});
 };
 
