@@ -37,6 +37,8 @@ describe('Query syntax', ()=> {
 	it('should support boolean queries', ()=> {
 		expect(ss('foo')).to.deep.equal({foo: true});
 		expect(ss('!foo')).to.deep.equal({foo: false});
+		expect(ss('foo?')).to.deep.equal({foo: {$exists: true}});
+		expect(ss('foo!?')).to.deep.equal({foo: {$exists: false}});
 	});
 
 	it('should support number queries', ()=> {

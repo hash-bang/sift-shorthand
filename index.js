@@ -169,6 +169,8 @@ shorthand.defaults = {
 		{id: '>', exec: (a, b) => ({[a]: {$gt: parseFloat(b)}})},
 		{id: '<', exec: (a, b) => ({[a]: {$lt: parseFloat(b)}})},
 		{id: '=', exec: (a, b) => ({[a]: b}), values: true},
+		{id: '!?', compiled: /(?<a>.+)!\?/, exec: (a, b) => ({[a]: {$exists: false}})},
+		{id: '?', compiled: /(?<a>.+)\?/, exec: (a, b) => ({[a]: {$exists: true}})},
 		{id: 'false', compiled: /^!(?<a>.+)$/, exec: a => ({[a]: false}), values: true},
 		{id: 'true', compiled: /^(?<a>.+)$/, exec: a => ({[a]: true}), values: true},
 	],

@@ -38,6 +38,8 @@ The main API supports simple string, CSV, arrays and a variety of other input ty
 | `key!=vak`          |           | `foo!=bar`          | `{foo: ${ne: "bar"}}`       | Negation syntax                                                 |
 | `key`               | Boolean   | `foo`               | `{foo: true}`               | Simple boolean flag                                             |
 | `!key`              |           | `!foo`              | `{foo: false}`              | Simple negation boolean flag                                    |
+| `key?`              |           | `foo?`              | `{foo: {$exists: true}}`    | Checks for the existance of a key within a document             |
+| `key!?`             |           | `foo!?`             | `{foo: {$exists: false}}`   | Checks for the non-existance of a key within a document         |
 | `key<number`        | Number    | `foo<123`           | `{foo: {$lt: 123}}`         | Number is-less-than                                             |
 | `key<=number`       |           | `foo<=123`          | `{foo: {$lte: 123}}`        | Number is-less-or-equal-to                                      |
 | `key>number`        |           | `foo>123`           | `{foo: {$gt: 123}}`         | Number is-greater-than                                          |
