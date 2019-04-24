@@ -76,4 +76,9 @@ describe('Query syntax', ()=> {
 
 	});
 
+	it('should support disabling of HanSON rewriting', ()=> {
+		expect(ss('{foo:"Foo!"}', {mergeJSON: Object.assign})).to.deep.equal({'foo': 'Foo!'});
+		expect(ss('{"foo.bar.baz":"nested"}', '{"foo.quz":123}', {mergeJSON: Object.assign})).to.deep.equal({'foo.bar.baz': 'nested', 'foo.quz': 123});
+	});
+
 });

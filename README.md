@@ -84,6 +84,8 @@ Object containing the default values used in the main `siftShorthand()` function
 |-----------------------------|------------------|-------------------------|-------------------------------------------------------------------------|
 | `throw`                     | `boolean`        | `true`                  | Whether to throw an error when input JSON / HanSON is invalid           |
 | `merge`                     | `function`       | `shorthand.mergeDotted` | The default merge method to use                                         |
+| `mergeJSON`                 | `function`       | `undefined`             | Method used to merge JSON data specifically (set to `Object.assign` to keep dotted notation |
+| `mergeString`               | `function`       | `undefined`             | Method used to merge string assignments specifically                    |
 | `hanson`                    | `boolean`        | `true`                  | Whether to enable HanSON decoding (slower but easier to use than JSON)  |
 | `isJSON`                    | `RegExp`         | See code                | How to determine if an argument is JSON / HanSON                        |
 | `stringAssignmentGuessType` | `boolean`        | `true`                  | Try to guess and correct the incoming input type for string assignments |

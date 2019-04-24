@@ -24,7 +24,7 @@ var shorthand = function(...args) {
 			settings.merge(q, arg);
 		} else if (_.isString(arg) && settings.isJSON(arg)) {
 			try {
-				settings.merge(q, settings.hanson ? hanson.parse(arg) : JSON.parse(arg));
+				(settings.mergeJSON || settings.merge)(q, settings.hanson ? hanson.parse(arg) : JSON.parse(arg));
 			} catch (e) {
 				if (settings.throw) throw e;
 			}
@@ -38,7 +38,7 @@ var shorthand = function(...args) {
 					});
 					if (assigner) {
 						var bits = assigner.compiled.exec(arg);
-						(assigner.merge || settings.merge)(q,
+						(assigner.merge || settings.mergeString || settings.merge)(q,
 							assigner.exec(
 								bits.groups.a,
 								settings.stringAssignmentGuessType
